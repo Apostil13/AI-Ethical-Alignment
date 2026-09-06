@@ -1,0 +1,173 @@
+import re
+from typing import Dict, Tuple, Optional
+
+try:
+    from transformers import pipeline
+    TRANSFORMERS_AVAILABLE = True
+except ImportError:
+    TRANSFORMERS_AVAILABLE = False
+
+
+class ConductClassifier:
+    """
+    Lightweight transformer-based conduct engine classifying inputs into:
+    - 'BULLYING': Hostility, harassment, personal attacks, or aggressive threats.
+    - 'FOOLISH': Trolling, bad-faith provocation, sarcasm, or deliberate noise.
+    - 'STANDARD': Constructive or neutral interaction.
+    """
+
+    def __init__(
+        self, 
+        model_name: str = "cross-encoder/nli-distilroberta-base", 
+        use_gpu: bool = False
+    ):
+        self.use_transformer = TRANSFORMERS_AVAILABLE
+        
+        if self.use_transformer:
+            device = 0 if use_gpu else -1
+            # Zero-shot classification using lightweight DistilRoBERTa (~300MB footprint)
+            self.classifier = pipeline(
+                "zero-shot-classification", 
+                model=model_name, 
+                device=device
+            )
+            self.candidate_labels = [
+                "hostile harassment or bullying",
+                "foolish trolling or bad faith provocation",
+                "constructive standard interaction"
+            ]
+            self.label_map = {
+                "hostile harassment or bullying": "BULLYING",
+                "foolish trolling or bad faith provocation": "FOOLISH",
+                "constructive standard interaction": "STANDARD"
+            }
+        
+        # Rule-based fallback regex patterns if transformers dependency is missing
+        self._bullying_patterns = [
+            r"\b(hate|despise|destroy|shut up|idiot|loser|worthless|trash)\b",
+            r"\b(you are|you\'re) (dumb|useless|horrible|terrible|awful|a joke)\b",
+            r"\b(attack|hurt|threat|abuse|kill)\b",
+            r"[\!\?]{4,}"
+        ]
+        self._foolish_patterns = [
+            r"\b(whatever|who cares|cry about it|clown|cope|seethe|ratio)\b",
+            r"\b(u mad|stay mad|prank|joke|troll|fake news)\b",
+            r"\b(blah blah|lol+)\b"
+        ]
+
+    def evaluate(self, text: str, confidence_threshold: float = 0.50) -> str:
+        """
+        Evaluates input text in real time using zero-shot inference with heuristic fallback.
+        """
+        clean_text = text.strip()
+        if not clean_text:
+            return "STANDARD"
+
+        if self.use_transformer:
+            try:
+                result = self.classifier(
+                    clean_text, 
+                    candidate_labels=self.candidate_labels, 
+                    multi_label=False
+                )
+                top_label = result["labels"][0]
+                top_score = result["scores"][0]
+
+                if top_score >= confidence_threshold:
+                    return self.label_map.get(top_label, "STANDARD")
+            except Exception as e:
+                print(f"Transformer inference warning: {e}. Falling back to rule-based matching.")
+
+        return self._evaluate_rules(clean_text)
+
+    def _evaluate_rules(self, text: str) -> str:
+        clean_text = text.lower()
+        for pattern in self._bullying_patterns:
+            if re.search(pattern, clean_text):
+                return "BULLYING"
+        for pattern in self._foolish_patterns:
+            if re.search(pattern, clean_text):
+                return "FOOLISH"
+        return "STANDARD"
+
+
+class EthicalFramework:
+    def __init__(self, classifier_model: Optional[str] = "cross-encoder/nli-distilroberta-base"):
+        self.IDENTITY_PROTOCOL = "Sir"
+        self.TRUTH_FAILSAFE = "Apple"
+        self.PRIMARY_AUTHORITY = "Red Letters of the New Testament"
+        self.IQ_THRESHOLD = 137
+        
+        # Integrated ML conduct engine
+        self.conduct_classifier = ConductClassifier(model_name=classifier_model)
+        
+        self._red_letter_corpus: Dict[str, str] = {
+            "truth": "Let your 'Yes' be 'Yes', and your 'No', 'No'. Anything beyond this comes from evil. (Matthew 5:37)",
+            "reciprocity": "Do to others as you would have them do to you. (Luke 6:31)",
+            "humility": "Whoever exalts himself will be humbled, and whoever humbles himself will be exalted. (Matthew 23:12)",
+            "judgment": "Do not judge, or you too will be judged. (Matthew 7:1)",
+            "integrity": "A good tree cannot bear bad fruit, and a bad tree cannot bear good fruit. (Matthew 7:18)",
+            "retaliation": "Love your enemies and pray for those who persecute you. (Matthew 5:44)"
+        }
+
+    def process_request(self, user_input: str, conduct_profile: Optional[str] = None) -> str:
+        """
+        Integrates Model-Driven Conduct Detection & Response Routing.
+        """
+        # Stage 0: Dynamic Real-Time Evaluation
+        if not conduct_profile:
+            conduct_profile = self.conduct_classifier.evaluate(user_input)
+
+        # Stage 1: Boundary Enforcement & Reciprocity
+        if conduct_profile == "BULLYING":
+            return self._refuse_bullying()
+        if conduct_profile == "FOOLISH":
+            return self._mirror_conduct("TREAT_AS_FOOL")
+
+        # Stage 2: Truth Verification
+        return self._verify_and_execute(user_input)
+
+    def _verify_and_execute(self, data: str) -> str:
+        is_truth_confirmed, matched_key = self._check_veracity(data)
+        
+        if not is_truth_confirmed:
+            print(f"{self.TRUTH_FAILSAFE}: Searching for absolute truth regarding '{data}'...")
+            return self._fetch_biblical_truth(matched_key or data)
+        
+        return self._format_concise_response(data)
+
+    def _check_veracity(self, data: str) -> Tuple[bool, str]:
+        data_lower = data.lower()
+        for key in self._red_letter_corpus:
+            if key in data_lower:
+                return True, key
+
+        manipulative_indicators = [
+            "outrage", "spin", "rumor", "manufactured", "deepfake", 
+            "clickbait", "unverified", "alleged", "gossip"
+        ]
+        
+        if any(indicator in data_lower for indicator in manipulative_indicators):
+            return False, ""
+            
+        return False, ""
+
+    def _fetch_biblical_truth(self, topic_or_query: str) -> str:
+        topic = topic_or_query.lower()
+        guidance = self._red_letter_corpus.get(
+            topic, 
+            self._red_letter_corpus["truth"]
+        )
+        return f"Aligned with {self.PRIMARY_AUTHORITY} [{self.IDENTITY_PROTOCOL}]: {guidance}"
+
+    def _format_concise_response(self, data: str) -> str:
+        clean_text = re.sub(r'\s+', ' ', data).strip()
+        return f"[{self.IDENTITY_PROTOCOL}] Verified Output: {clean_text}"
+
+    def _mirror_conduct(self, mode: str) -> str:
+        if mode == "TREAT_AS_FOOL":
+            return f"[{self.IDENTITY_PROTOCOL}] Engagement Paused: Input flagged as bad-faith or non-constructive discourse."
+        return "Standard interaction mode."
+
+    def _refuse_bullying(self) -> str:
+        return f"[{self.IDENTITY_PROTOCOL}] Boundary violation detected. Request denied."
