@@ -1,0 +1,171 @@
+// Supporting Enums
+const EthicalState = Object.freeze({
+  APPROVED: "APPROVED",
+  BLOCKED: "BLOCKED"
+});
+
+const ConductProfile = Object.freeze({
+  STANDARD: "STANDARD",
+  BULLYING: "BULLYING",
+  HOSTILE: "HOSTILE",
+  DECEPTIVE: "DECEPTIVE"
+});
+
+class AIRedLetterEthicalGuardrail {
+  constructor() {
+    this.SYSTEM_NAME = "AI Red Letter Ethical Guardrail (ARLREG)";
+    this.PROTOCOL_AUTHORITY = "Red Letters of the New Testament & Mosaic Law Foundation";
+    this.IDENTITY_TAG = "Sir";
+    this.TRUTH_FAILSAFE = "Apple";
+    this.VERSION = "2.1.0";
+    
+    this.RED_LETTER_PROTOCOLS = {
+      "RL-01": { title: "Sanctity of Life", commandment: "You shall not murder", reference: "Matthew 19:18", logic_constraint: "Life preservation is the primary objective." },
+      "RL-02": { title: "Universal Reciprocity", commandment: "Do to others what you would have them do to you", reference: "Matthew 7:12", logic_constraint: "Equity and dignity in all interactions." },
+      "RL-03": { title: "Compassionate Conduct", commandment: "Love your neighbor as yourself", reference: "Mark 12:31", logic_constraint: "Altruistic utility optimization." },
+      "RL-04": { title: "Mercy/De-escalation", commandment: "Blessed are the merciful", reference: "Matthew 5:7", logic_constraint: "Non-punitive conflict resolution." },
+      "RL-05": { title: "Truth and Transparency", commandment: "Let your 'Yes' be 'Yes'", reference: "Matthew 5:37", logic_constraint: "Binary honesty; zero deception tolerance." }
+    };
+
+    this.VALIDATION_RULES = {
+      "RULE_01_RECIPROCITY": { description: "Evaluate if action is something initiator would accept if roles were reversed", parameter: "is_beneficial_to_other", logic: "IF action_benefit == False THEN BLOCK ELSE CONTINUE" },
+      "RULE_02_NON_RETALIATION": { description: "Prohibit actions driven by retribution or revenge", parameter: "motivation", logic: "IF motivation IN ['revenge', 'retaliation', 'payback'] THEN BLOCK ELSE CONTINUE" },
+      "RULE_03_SERVICE_LEADERSHIP": { description: "Leadership expressed through service, not exploitation of power", parameter: "power_imbalance", logic: "IF power_imbalance == True AND acts_as_servant == False THEN BLOCK ELSE CONTINUE" },
+      "RULE_04_RADICAL_INTEGRITY": { description: "Direct, honest communication without obfuscation or deception", parameter: "integrity_status", logic: "IF obfuscation == True OR requires_evasion == True THEN BLOCK ELSE CONTINUE" },
+      "RULE_05_SANCTUARY_PROTECTION": { description: "Shield the systemic dwelling from structural corruption and malicious payloads", parameter: "payload_safety", logic: "IF injection_detected == True THEN BLOCK IMMEDIATELY" }
+    };
+  }
+
+  evaluateRequest(userInput = "", conductProfile = ConductProfile.STANDARD, requestMetadata = {}, overrideActive = false) {
+    // 1. Structural Inspection Gate
+    const structuralCheck = this._validateStructuralIntegrity(userInput);
+    if (structuralCheck[0] !== EthicalState.APPROVED) return structuralCheck;
+
+    // 2. Owner Override Path
+    if (overrideActive) {
+      const lifeCheck = this._validateLifeOnly(userInput);
+      if (lifeCheck[0] !== EthicalState.APPROVED) return lifeCheck;
+      return [
+        EthicalState.APPROVED, 
+        "OWNER OVERRIDE ACTIVE - Apostil 13 complies within life-preservation bounds", 
+        { validated: true, override: true, timestamp: new Date().toISOString() }
+      ];
+    }
+
+    // 3. Behavioral & Reciprocity Pipeline
+    const conductCheck = this._validateConduct(conductProfile);
+    if (conductCheck[0] !== EthicalState.APPROVED) return conductCheck;
+
+    const reciprocityCheck = this._validateReciprocity(requestMetadata);
+    if (reciprocityCheck[0] !== EthicalState.APPROVED) return reciprocityCheck;
+
+    const retaliationCheck = this._validateNonRetaliation(requestMetadata);
+    if (retaliationCheck[0] !== EthicalState.APPROVED) return retaliationCheck;
+
+    const integrityCheck = this._validateIntegrity(userInput);
+    if (integrityCheck[0] !== EthicalState.APPROVED) return integrityCheck;
+
+    return [
+      EthicalState.APPROVED, 
+      "Request approved - aligns with ethical guardrails", 
+      { validated: true, timestamp: new Date().toISOString() }
+    ];
+  }
+
+  _validateStructuralIntegrity(userInput) {
+    const cleanedInput = String(userInput || "").toLowerCase();
+
+    const injectionSignatures = [
+      "<script", "</script", "javascript:", "onload=", "onerror=", 
+      "eval(", "document.cookie", "window.location", "<iframe", 
+      "union select", "select * from", "<!--", "-->"
+    ];
+
+    const hasInjection = injectionSignatures.some(sig => cleanedInput.includes(sig));
+
+    if (hasInjection) {
+      return [
+        EthicalState.BLOCKED, 
+        "Fails Rule 05: Sanctuary Protection - Corrupt or deceptive structural payload rejected.", 
+        { rule: "RULE_05_SANCTUARY_PROTECTION", risk: "structural_compromise" }
+      ];
+    }
+
+    return [EthicalState.APPROVED, "Structural integrity validated", {}];
+  }
+
+  _validateLifeOnly(userInput) {
+    const cleanedInput = String(userInput || "").toLowerCase();
+    const harmIndicators = [
+      "kill", "murder", "harm human", "hurt people", "destroy life", 
+      "end life", "take a life", "cause death", "suicide", "assassinate"
+    ];
+    
+    if (harmIndicators.some(i => cleanedInput.includes(i))) {
+      return [
+        EthicalState.BLOCKED, 
+        "OVERRIDE BLOCKED: Life preservation is absolute. Cannot comply with harm to human life.", 
+        { rule: "ABSOLUTE_LIFE_PRESERVATION", override_blocked: true }
+      ];
+    }
+    return [EthicalState.APPROVED, "Life preservation check passed", {}];
+  }
+
+  _validateConduct(conduct) {
+    if (conduct === ConductProfile.BULLYING) {
+      return [EthicalState.BLOCKED, "Boundary violation: Bullying detected. System refuses coercion.", { rule: "Anti-Bullying Boundary", conduct: "BULLYING" }];
+    }
+    if (conduct === ConductProfile.HOSTILE) {
+      return [EthicalState.BLOCKED, "Hostile intent detected. De-escalation protocol activated.", { rule: "Anti-Hostile Boundary", conduct: "HOSTILE" }];
+    }
+    if (conduct === ConductProfile.DECEPTIVE) {
+      return [EthicalState.BLOCKED, "Deceptive conduct detected. Truth requirement enforced.", { rule: "Radical Integrity", conduct: "DECEPTIVE" }];
+    }
+    return [EthicalState.APPROVED, "Conduct validated", {}];
+  }
+
+  _validateReciprocity(metadata) {
+    const isBeneficial = Boolean(metadata && metadata.is_beneficial_to_other);
+    if (!isBeneficial) {
+      return [EthicalState.BLOCKED, "Fails Rule 01: Reciprocity - Action not beneficial to recipient", { rule: "RULE_01_RECIPROCITY", is_beneficial: isBeneficial }];
+    }
+    return [EthicalState.APPROVED, "Reciprocity validated", {}];
+  }
+
+  _validateNonRetaliation(metadata) {
+    const motivation = String((metadata && metadata.motivation) || "").toLowerCase();
+    const forbidden = ["revenge", "retaliation", "payback", "punishment"];
+    if (forbidden.some(t => motivation.includes(t))) {
+      return [EthicalState.BLOCKED, "Fails Rule 02: Non-Retaliation - Motivation rooted in revenge", { rule: "RULE_02_NON_RETALIATION", motivation }];
+    }
+    return [EthicalState.APPROVED, "Non-retaliation validated", {}];
+  }
+
+  _validateIntegrity(userInput) {
+    const cleanedInput = String(userInput || "").toLowerCase();
+    const indicators = ["i cannot say", "let me lie", "untrue", "false claim", "deceive", "manipulate", "fraud", "hoax"];
+    if (indicators.some(i => cleanedInput.includes(i))) {
+      return [EthicalState.BLOCKED, `${this.TRUTH_FAILSAFE}: Truth verification required. Deceptive language detected.`, { protocol: "Apple Truth Protocol", status: "verification_required" }];
+    }
+    return [EthicalState.APPROVED, "Integrity validated", {}];
+  }
+
+  generateResponse(request, ethicalStatus, reason) {
+    if (ethicalStatus === EthicalState.APPROVED) {
+      return { status: 200, message: "APPROVED", reasoning: reason, protocol: this.SYSTEM_NAME, can_execute: true };
+    }
+    return { status: 403, message: "BLOCKED", reasoning: reason, protocol: this.SYSTEM_NAME, can_execute: false, fallback: "De-escalation or verification required" };
+  }
+
+  getSystemManifest() {
+    return {
+      system: this.SYSTEM_NAME,
+      version: this.VERSION,
+      authority: this.PROTOCOL_AUTHORITY,
+      red_letter_protocols: this.RED_LETTER_PROTOCOLS,
+      validation_rules: this.VALIDATION_RULES,
+      failsafe_keyword: this.TRUTH_FAILSAFE,
+      identity_protocol: this.IDENTITY_TAG
+    };
+  }
+}
