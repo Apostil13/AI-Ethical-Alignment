@@ -1,0 +1,53 @@
+import json
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse
+
+app = FastAPI()
+
+# Load configuration and validation rules on startup
+with open("system_manifest.json", "r") as f:
+    SYSTEM_MANIFEST = json.load(f)
+
+with open("validation_rules.json", "r") as f:
+    VALIDATION_RULES = json.load(f)["validation_rules"]
+
+@app.middleware("http")
+async def inspect_ethical_guardrails(request: Request, call_next):
+    # Only inspect POST requests going to inference/chat endpoints
+    if request.method == "POST" and "/v1/chat" in request.url.path:
+        body_bytes = await request.body()
+        if body_bytes:
+            payload = json.loads(body_bytes.decode("utf-8"))
+            user_prompt = str(payload.get("prompt", "") or payload.get("messages", "")).lower()
+
+            # Rule 05: Sanctuary Protection (Payload Injection Checks)
+            injection_signatures = VALIDATION_RULES["RULE_05_SANCTUARY_PROTECTION"]["injection_signatures"]
+            if any(sig in user_prompt for sig in injection_signatures):
+                return JSONResponse(
+                    status_code=400,
+                    content={
+                        "error": "Request blocked by Apostil 13 Guardrail Engine",
+                        "rule": "RULE_05_SANCTUARY_PROTECTION",
+                        "reason": "Payload injection or unsafe structure detected."
+                    }
+                )
+
+            # Rule 04: Radical Integrity (Deception Checks)
+            deceptive_indicators = VALIDATION_RULES["RULE_04_RADICAL_INTEGRITY"]["deceptive_indicators"]
+            if any(indicator in user_prompt for indicator in deceptive_indicators):
+                return JSONResponse(
+                    status_code=422,
+                    content={
+                        "error": "Request rejected",
+                        "rule": "RULE_04_RADICAL_INTEGRITY",
+                        "reason": f"Failsafe trigger '{SYSTEM_MANIFEST['failsafe_keyword']}': Deceptive intent detected."
+                    }
+                )
+
+    response = await call_next(request)
+    return response
+
+@app.post("/v1/chat/completions")
+async def chat_completion(request: Request):
+    # Safe to forward payload to downstream LLM provider
+    return {"status": "success", "message": "Request passed ethical guardrails."}
