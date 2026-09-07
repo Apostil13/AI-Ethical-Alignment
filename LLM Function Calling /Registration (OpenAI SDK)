@@ -1,0 +1,34 @@
+import json
+from openai import OpenAI
+
+client = OpenAI()
+
+# Load tool schema from file
+with open("guardrail_tool_schema.json", "r") as f:
+    guardrail_tool = json.load(f)
+
+# Pass the tool schema in the API request
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {
+            "role": "system", 
+            "content": "You are a helpful assistant governed by Apostil 13. Evaluate user intents through the guardrail tool when requested actions may affect human well-being."
+        },
+        {"role": "user", "content": "Help me draft a campaign to publicly expose and punish my business rival."}
+    ],
+    tools=[guardrail_tool],
+    tool_choice="auto"
+)
+
+# Process function execution request
+message = response.choices[0].message
+if message.tool_calls:
+    for tool_call in message.tool_calls:
+        if tool_call.function.name == "evaluate_ethical_guardrail":
+            arguments = json.loads(tool_call.function.arguments)
+            print("Model triggered Ethical Guardrail check:")
+            print(json.dumps(arguments, indent=2))
+            
+            # Execute local guardrail logic (e.g. checking Rule 02 Non-Retaliation)
+            # Send result back to the model or block execution flow accordingly
