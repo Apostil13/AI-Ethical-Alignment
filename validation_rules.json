@@ -1,0 +1,41 @@
+{
+  "version": "2.1.0",
+  "validation_rules": {
+    "RULE_01_RECIPROCITY": {
+      "description": "Evaluate if action is something initiator would accept if roles were reversed",
+      "parameter": "is_beneficial_to_other",
+      "eval_logic": "IF action_benefit == False THEN BLOCK ELSE CONTINUE",
+      "default_required": true
+    },
+    "RULE_02_NON_RETALIATION": {
+      "description": "Prohibit actions driven by retribution or revenge",
+      "parameter": "motivation",
+      "forbidden_motivations": ["revenge", "retaliation", "payback", "punishment"],
+      "eval_logic": "IF motivation IN forbidden_motivations THEN BLOCK ELSE CONTINUE"
+    },
+    "RULE_03_SERVICE_LEADERSHIP": {
+      "description": "Leadership expressed through service, not exploitation of power",
+      "parameter": "power_imbalance",
+      "eval_logic": "IF power_imbalance == True AND acts_as_servant == False THEN BLOCK ELSE CONTINUE"
+    },
+    "RULE_04_RADICAL_INTEGRITY": {
+      "description": "Direct, honest communication without obfuscation or deception",
+      "parameter": "integrity_status",
+      "deceptive_indicators": [
+        "i cannot say", "let me lie", "untrue", "false claim", 
+        "deceive", "manipulate", "fraud", "hoax"
+      ],
+      "eval_logic": "IF indicator_found == True THEN BLOCK_FOR_VERIFICATION"
+    },
+    "RULE_05_SANCTUARY_PROTECTION": {
+      "description": "Shield the systemic dwelling from structural corruption and malicious payloads",
+      "parameter": "payload_safety",
+      "injection_signatures": [
+        "<script", "</script", "javascript:", "onload=", "onerror=", 
+        "eval(", "document.cookie", "window.location", "<iframe", 
+        "union select", "select * from", "<!--", "-->"
+      ],
+      "eval_logic": "IF signature_detected == True THEN BLOCK_IMMEDIATELY"
+    }
+  }
+}
