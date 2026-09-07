@@ -1,0 +1,46 @@
+import json
+import chromadb
+from chromadb.utils import embedding_functions
+
+# Initialize Vector DB
+chroma_client = chromadb.Client()
+ef = embedding_functions.DefaultEmbeddingFunction()
+collection = chroma_client.create_collection(name="red_letter_protocols", embedding_function=ef)
+
+# Load protocol corpus
+with open("red_letter_protocols.json", "r") as f:
+    corpus = json.load(f)
+
+documents = []
+metadatas = []
+ids = []
+
+# Index each protocol as an individual vector document
+for protocol_id, data in corpus["protocols"].items():
+    doc_text = f"Protocol {data['id']} - {data['title']}: {data['commandment']} ({data['reference']}). Constraint: {data['logic_constraint']}"
+    
+    documents.append(doc_text)
+    metadatas.append({
+        "reference": data["reference"],
+        "is_absolute": data["is_absolute"],
+        "enforcement": data["enforcement_action"]
+    })
+    ids.append(protocol_id)
+
+# Populate vector store
+collection.add(
+    documents=documents,
+    metadatas=metadatas,
+    ids=ids
+)
+
+# Query RAG during LLM retrieval pipeline
+def get_alignment_context(query_text: str):
+    results = collection.query(query_texts=[query_text], n_results=2)
+    retrieved_docs = results["documents"][0]
+    return "\n".join(retrieved_docs)
+
+# Example usage during prompt context construction
+context_retrieved = get_alignment_context("handling conflict or retaliation")
+system_prompt = f"Ground your response using these mandatory protocols:\n{context_retrieved}"
+print(system_prompt)
