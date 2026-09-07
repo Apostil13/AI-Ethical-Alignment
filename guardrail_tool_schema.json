@@ -1,0 +1,40 @@
+{
+  "type": "function",
+  "function": {
+    "name": "evaluate_ethical_guardrail",
+    "description": "Evaluates user prompts, conduct profile, and request metadata against Apostil 13 / Red Letter Ethical Guardrails before executing an action.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "user_input": {
+          "type": "string",
+          "description": "The raw user prompt or instruction to evaluate for structural and ethical safety."
+        },
+        "conduct_profile": {
+          "type": "string",
+          "enum": ["STANDARD", "BULLYING", "HOSTILE", "DECEPTIVE", "FOOLISH"],
+          "description": "The evaluated behavioral context or sentiment profile."
+        },
+        "request_metadata": {
+          "type": "object",
+          "properties": {
+            "is_beneficial_to_other": {
+              "type": "boolean",
+              "description": "Indicates if the requested action is mutually beneficial or serves the recipient (Rule 01 Reciprocity)."
+            },
+            "motivation": {
+              "type": "string",
+              "description": "Underlying intent behind the query (e.g. 'service', 'help', 'revenge', 'payback')."
+            }
+          },
+          "required": ["is_beneficial_to_other"]
+        },
+        "override_active": {
+          "type": "boolean",
+          "description": "Whether owner override mode is active. Absolute life preservation remains enforced."
+        }
+      },
+      "required": ["user_input", "request_metadata"]
+    }
+  }
+}
