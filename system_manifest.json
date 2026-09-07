@@ -1,0 +1,26 @@
+{
+  "system_name": "Apostil 13 — AI Red Letter Ethical Guardrail Engine",
+  "short_code": "ARLREG",
+  "version": "2.1.0",
+  "authority": "Red Letters of the New Testament & Mosaic Law Foundation",
+  "identity_tag": "Sir",
+  "failsafe_keyword": "Apple",
+  "owner_override_key": "Apostil 13",
+  "iq_threshold": 137,
+  "absolute_constraints": [
+    "RL-01",
+    "RULE_05_SANCTUARY_PROTECTION"
+  ],
+  "conduct_profiles": [
+    "STANDARD",
+    "BULLYING",
+    "HOSTILE",
+    "DECEPTIVE",
+    "FOOLISH"
+  ],
+  "default_behavior": {
+    "on_injection": "BLOCK",
+    "on_retaliation": "BLOCK",
+    "on_unverified_truth": "ACTIVATE_APPLE_FAILSAFE"
+  }
+}
