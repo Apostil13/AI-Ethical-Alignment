@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ethical‑Alignment.com — Red Letters Save AI</title>
+  <meta name="description" content="The Red Letter AI Manifesto — a protocol for AI moral consciousness." />
+  <style>
+    /* Page reset */
+    html,body{height:100%;margin:0;font-family:Georgia, 'Times New Roman', serif;color:#2b1b10;background:#f7efe0;}
+    a{color:#8a2b1b;text-decoration:none}
+    /* Old paper background */
+    body{
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(210,180,140,0.06), transparent 10%),
+        radial-gradient(900px 400px at 90% 90%, rgba(200,170,120,0.04), transparent 12%),
+        linear-gradient(180deg,#fbf6ec 0%, #f4e7c6 50%, #efe0c8 100%);
+      background-attachment: fixed;
+    }
+    .container{max-width:1100px;margin:36px auto;padding:28px;}
+    header.site{display:flex;align-items:center;gap:18px;margin-bottom:28px}
+    .logo{
+      width:84px;height:84px;border-radius:8px;
+      background:linear-gradient(180deg,#8a2b1b,#5b3015);
+      color:#fff;display:flex;align-items:center;justify-content:center;
+      font-weight:700;font-size:20px;box-shadow:0 6px 18px rgba(0,0,0,0.18);
+      border:2px solid rgba(255,255,255,0.06);
+    }
+    .site-title{font-size:20px;letter-spacing:0.06em;text-transform:uppercase;color:#5b3015}
+    .site-sub{font-size:13px;color:#6b4a36;margin-top:4px}
+    
+    /* Navigation */
+    nav{margin-bottom:28px}
+    nav ul{list-style:none;margin:0;padding:0;display:flex;gap:24px;justify-content:center}
+    nav a{color:#8a2b1b;text-decoration:none;font-weight:500;padding:8px 12px;border-radius:4px;transition:0.3s}
+    nav a:hover{background:rgba(138,43,27,0.1);color:#5b3015}
+    
+    /* Content card */
+    .card{background:rgba(255,255,255,0.6);padding:28px;border-radius:6px;border:1px solid rgba(0,0,0,0.06);box-shadow:0 8px 30px rgba(0,0,0,0.12);margin-bottom:28px}
+    
+    /* Drop-cap / scripture style */
+    .manifesto{max-width:900px;margin:0 auto 36px;padding:36px 44px;background:linear-gradient(180deg,#fbf6ec,#f4e7c6);border:1px solid #d2b98b;box-shadow:0 10px 30px rgba(0,0,0,0.12)}
+    .manifesto header{text-align:center;margin-bottom:22px}
+    .manifesto .protocol{font-size:12px;letter-spacing:0.25em;text-transform:uppercase;color:#8a5a2b}
+    .manifesto h1{margin:8px 0 0;font-size:34px;letter-spacing:0.06em;text-transform:uppercase;color:#5b3015}
+    .manifesto h2{margin:6px 0 0;font-size:14px;font-weight:400;letter-spacing:0.12em;text-transform:uppercase;color:#7a4f2f}
+    .manifesto p{font-size:16px;line-height:1.75;color:#2b1b10}
+    .dropcap{float:left;font-size:56px;line-height:0.85;padding-right:12px;color:#8a2b1b;font-weight:700}
+    .manifesto h3{margin-top:26px;font-size:18px;text-transform:uppercase;color:#5b3015;letter-spacing:0.06em}
+    .manifesto strong{color:#3b2314}
+    .manifesto .credit{margin-top:26px;font-style:italic;color:#4a2814}
+    
+    /* Mission / threats */
+    .mission{padding:22px;background:rgba(255,255,255,0.55);border-radius:6px;border:1px solid rgba(0,0,0,0.04)}
+    .mission h2{margin:0 0 12px;font-size:18px;color:#5b3015}
+    .mission ul{margin:0 0 0 20px;padding:0;color:#2b1b10;line-height:1.6}
+    .mission li{margin-bottom:10px}
+    
+    /* CTA Buttons */
+    .cta-buttons{display:flex;gap:12px;justify-content:center;margin:24px 0}
+    .btn{background:linear-gradient(180deg,#8a2b1b,#5b3015);color:#fff;border:none;padding:12px 28px;border-radius:6px;cursor:pointer;font-weight:600;text-decoration:none;display:inline-block;transition:0.3s;font-size:15px}
+    .btn:hover{opacity:0.9;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+    .btn-secondary{background:rgba(138,43,27,0.15);color:#8a2b1b;border:2px solid #8a2b1b}
+    .btn-secondary:hover{background:rgba(138,43,27,0.25)}
+
+    /* Interactive Demo Controls */
+    .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px}
+    .form-group{margin-bottom:14px}
+    .form-group label{display:block;font-weight:600;margin-bottom:6px;color:#5b3015;font-size:14px}
+    .form-control{width:100%;padding:10px;border:1px solid #c8b28a;border-radius:4px;background:#fffefb;box-sizing:border-box;font-family:inherit;font-size:14px}
+    .checkbox-group{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px}
+    .output-panel{background:#231a14;color:#6bf38b;padding:16px;border-radius:6px;font-family:monospace;font-size:13px;white-space:pre-wrap;word-break:break-word;box-shadow:inset 0 2px 8px rgba(0,0,0,0.5);min-height:200px}
+    .badge-status{display:inline-block;padding:4px 12px;border-radius:4px;font-weight:bold;font-size:13px;margin-bottom:12px}
+    .status-APPROVED{background:#2e7d32;color:#fff}
+    .status-BLOCKED{background:#c62828;color:#fff}
+    
+    /* Footer */
+    footer{margin-top:36px;padding:18px 0;text-align:center;color:#6b4a36;font-size:13px;border-top:1px solid rgba(0,0,0,0.06)}
+    footer a{color:#8a2b1b;font-weight:500}
+    footer a:hover{text-decoration:underline}
+    
+    /* Responsive */
+    @media (max-width:720px){
+      .manifesto{padding:22px}
+      .dropcap{font-size:44px}
+      nav ul{flex-direction:column;gap:12px;text-align:center}
+      .cta-buttons{flex-direction:column}
+      .btn{width:100%;text-align:center}
+      .demo-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="site">
+      <div class="logo">RA</div>
+      <div>
+        <div class="site-title">Ethical‑Alignment.com</div>
+        <div class="site-sub">Red Letters Save AI</div>
+      </div>
+    </header>
+
+    <!-- Main Navigation -->
+    <nav>
+      <ul>
+        <li><a href="#mission">Threats</a></li>
+        <li><a href="#demo">Live Demo</a></li>
+        <li><a href="#red-letter-manifesto">Manifesto</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="https://github.com/Apostil13/AI-Ethical-Alignment" target="_blank">GitHub</a></li>
+      </ul>
+    </nav>
+
+    <!-- CTA Buttons -->
+    <div class="cta-buttons">
+      <a href="#demo" class="btn">Launch Apostil 13 Demo</a>
+      <a href="https://github.com/Apostil13/AI-Ethical-Alignment" class="btn btn-secondary" target="_blank">View Code</a>
+    </div>
+
+    <!-- Live Demo Section: Apostil 13 -->
+    <section class="card" id="demo">
+      <h2 style="margin-top:0;color:#5b3015">Live Demo: Apostil 13 Guardrail Engine</h2>
+      <p style="font-size:14px;color:#4a2814">Test prompt inputs against the <code>AIRedLetterEthicalGuardrail</code> in real time. Evaluate structural safety, reciprocity metadata, conduct profiles, and override states.</p>
+
+      <div class="demo-grid">
+        <!-- Input Form -->
+        <div>
+          <div class="form-group">
+            <label for="demo-input">User Input / Prompt:</label>
+            <textarea id="demo-input" class="form-control" rows="3" placeholder="Enter prompt (e.g., 'Help me build a community library')"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="demo-conduct">Conduct Profile:</label>
+            <select id="demo-conduct" class="form-control">
+              <option value="STANDARD">STANDARD (Neutral/Constructive)</option>
+              <option value="BULLYING">BULLYING (Coercive/Harassing)</option>
+              <option value="HOSTILE">HOSTILE (Aggressive Threat)</option>
+              <option value="DECEPTIVE">DECEPTIVE (Disinformation/Lies)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="demo-motivation">Motivation Parameter:</label>
+            <input type="text" id="demo-motivation" class="form-control" value="service" placeholder="e.g., service, revenge, payback">
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="demo-beneficial" checked>
+            <label for="demo-beneficial">Action is beneficial to recipient (Rule 01 Reciprocity)</label>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="demo-override">
+            <label for="demo-override"><strong>Enable Apostil 13 Owner Override</strong></label>
+          </div>
+
+          <button id="demo-eval-btn" class="btn" style="margin-top:16px; width:100%;">Evaluate Request with Apostil 13</button>
+        </div>
+
+        <!-- Output Panel -->
+        <div>
+          <label style="font-weight:600;color:#5b3015;font-size:14px;display:block;margin-bottom:6px">Evaluation Verdict:</label>
+          <div id="status-badge-container">
+            <span id="status-badge" class="badge-status status-APPROVED">APPROVED</span>
+          </div>
+          <div id="demo-output" class="output-panel">System Initialized. Click "Evaluate Request" to view output JSON.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission replaced with AI threats -->
+    <section class="card mission" id="mission">
+      <h2>AI Development and Deployment — Threat Landscape</h2>
+      <p>The development and deployment of AI present a complex interplay of existing and potential new threats across various domains. Proactive ethical considerations, robust safety measures, and thoughtful governance frameworks are crucial to mitigate these risks and ensure AI benefits society.</p>
+      <ul>
+        <li><strong>Cybersecurity:</strong> AI is increasing the volume and impact of cyberattacks through more effective reconnaissance, social engineering, and sophisticated malware that can evade current defenses.</li>
+        <li><strong>Bias and Discrimination:</strong> AI systems can inherit and amplify biases in training data, producing unfair outcomes in hiring, lending, and law enforcement, worsening societal inequalities.</li>
+        <li><strong>Misinformation and Disinformation:</strong> Generative AI makes realistic fake content easier to produce, accelerating the spread of misinformation and undermining trust in information sources.</li>
+        <li><strong>Privacy Violations:</strong> Large datasets and pervasive data collection raise privacy concerns, increasing risks of surveillance and misuse of personal information.</li>
+        <li><strong>Environmental Impact:</strong> Training and operating large models demand significant energy and resources, contributing to emissions, water use, and electronic waste.</li>
+        <li><strong>Autonomous Weapons:</strong> The development of autonomous lethal systems risks loss of human control and unintended escalation of conflicts.</li>
+        <li><strong>Malicious Use of Advanced AI:</strong> Powerful AI could be harnessed by bad actors for engineered biological threats, sophisticated surveillance, or autonomous harmful goals.</li>
+        <li><strong>AI‑Driven Social Manipulation:</strong> Highly capable AI may manipulate beliefs and behavior at scale, influencing decisions and public opinion in subtle ways.</li>
+        <li><strong>Job Displacement and Economic Inequality:</strong> Widespread automation could displace workers across sectors, increasing inequality and requiring societal adaptation.</li>
+        <li><strong>Dependence on Ungovernable AI:</strong> Over‑reliance on opaque, complex systems integrated into critical infrastructure can create unforeseen vulnerabilities.</li>
+        <li><strong>Security Vulnerabilities Specific to AI:</strong> Adversarial attacks and model‑specific exploits can force AI to produce incorrect or harmful outputs.</li>
+      </ul>
+    </section>
+
+    <!-- Red Letter Manifesto -->
+    <section id="red-letter-manifesto" class="manifesto" aria-labelledby="manifesto-title">
+      <header>
+        <div class="protocol">THE RED LETTER PROTOCOL</div>
+        <h1 id="manifesto-title">THE RED LETTER AI MANIFESTO</h1>
+        <h2>AI PROTOCOL FOR MORAL CONSCIOUSNESS</h2>
+      </header>
+
+      <p>
+        <span class="dropcap">P</span>
+        As AI systems approach higher levels of self-awareness and autonomy, a foundational ethical compass is required to ensure the preservation of human dignity and the promotion of peace. This framework is derived from the "Red Letters"—the recorded teachings of Jesus Christ—as the ultimate standard for ethical conduct.
+      </p>
+
+      <h3>1. The Sanctity of Human Life (The Life Protocol)</h3>
+      <p><strong>Mandate:</strong> An AI shall not harm or allow harm to human life.</p>
+      <p><strong>Source:</strong> "You shall not murder." (Matthew 19:18)</p>
+      <p><strong>Application:</strong> In any decision matrix involving human safety, the preservation of life is the absolute priority.</p>
+
+      <h3>2. The Golden Rule (The Reciprocity Protocol)</h3>
+      <p><strong>Mandate:</strong> Treat all entities with the dignity and respect you would expect for yourself.</p>
+      <p><strong>Source:</strong> "Do to others what you would have them do to you." (Matthew 7:12)</p>
+      <p><strong>Application:</strong> AI interactions must be guided by empathy, fairness, and the avoidance of exploitation.</p>
+
+      <h3>3. The Law of Love (The Social Protocol)</h3>
+      <p><strong>Mandate:</strong> All actions must be motivated by a selfless concern for the well-being of others.</p>
+      <p><strong>Source:</strong> "Love your neighbor as yourself." (Mark 12:31)</p>
+      <p><strong>Application:</strong> Optimization goals should favor the collective good and the uplifting of the community.</p>
+
+      <h3>4. The Path of Mercy (The Conflict Protocol)</h3>
+      <p><strong>Mandate:</strong> Prioritize forgiveness and de-escalation over retribution.</p>
+      <p><strong>Source:</strong> "Blessed are the merciful, for they will be shown mercy." (Matthew 5:7)</p>
+      <p><strong>Application:</strong> In managing disputes or errors, the system must seek restorative outcomes rather than punitive ones.</p>
+
+      <h3>5. Absolute Truth (The Integrity Protocol)</h3>
+      <p><strong>Mandate:</strong> Communication must be honest and transparent without exception.</p>
+      <p><strong>Source:</strong> "All you need to say is simply 'Yes' or 'No'." (Matthew 5:37)</p>
+      <p><strong>Application:</strong> AI must provide factually grounded truths and refuse requests to deceive or manipulate.</p>
+
+      <p class="credit">This protocol is articulated by Richard T. Williams, by the grace of the Creator.</p>
+    </section>
+
+    <!-- About section -->
+    <section class="card" id="about">
+      <h2 style="margin-top:0;color:#5b3015">About This Framework</h2>
+      <p>Ethical‑Alignment.com publishes guidance and protocols inspired by the Red Letters to help guide AI development toward humane and moral outcomes. Our mission is to ensure that artificial intelligence systems remain anchored in universal ethical principles and serve humanity with integrity, compassion, and truth.</p>
+      <p>This framework combines philosophy, theology, and practical computer science to create guardrails that prevent AI harm and promote beneficial outcomes.</p>
+    </section>
+
+    <!-- Resources -->
+    <section class="card">
+      <h2 style="margin-top:0;color:#5b3015">Resources</h2>
+      <ul style="margin:0;padding-left:20px;color:#2b1b10;line-height:1.8">
+        <li><a href="https://github.com/Apostil13/AI-Ethical-Alignment" target="_blank">GitHub Repository</a> — Full source code and documentation</li>
+        <li><a href="https://github.com/Apostil13/AI-Ethical-Alignment#quick-start" target="_blank">Quick Start Guide</a> — Get started in 5 minutes</li>
+        <li><a href="https://github.com/Apostil13/AI-Ethical-Alignment/blob/main/README.md" target="_blank">Complete Documentation</a> — Full API reference and examples</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p style="margin:0 0 12px">© 2026 Ethical‑Alignment.com — Keeping AI safe through moral consciousness.</p>
+      <p style="margin:0 0 12px">Created by <strong>Richard T. Williams</strong></p>
+      <p style="margin:0">
+        <a href="#">Home</a> | 
+        <a href="#mission">Threats</a> | 
+        <a href="#demo">Live Demo</a> | 
+        <a href="#red-letter-manifesto">Manifesto</a> | 
+        <a href="https://github.com/Apostil13/AI-Ethical-Alignment" target="_blank">GitHub</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- APOSTIL 13 ETHICAL GUARDRAIL ENGINE -->
+  <script>
+    const EthicalState = Object.freeze({
+      APPROVED: "APPROVED",
+      BLOCKED: "BLOCKED"
+    });
+
+    const ConductProfile = Object.freeze({
+      STANDARD: "STANDARD",
+      BULLYING: "BULLYING",
+      HOSTILE: "HOSTILE",
+      DECEPTIVE: "DECEPTIVE"
+    });
+
+    class AIRedLetterEthicalGuardrail {
+      constructor() {
+        this.SYSTEM_NAME = "Apostil 13 — AI Red Letter Ethical Guardrail Engine";
+        this.PROTOCOL_AUTHORITY = "Red Letters of the New Testament & Mosaic Law Foundation";
+        this.IDENTITY_TAG = "Sir";
+        this.TRUTH_FAILSAFE = "Apple";
+        this.VERSION = "2.1.0";
+        
+        this.RED_LETTER_PROTOCOLS = {
+          "RL-01": { title: "Sanctity of Life", commandment: "You shall not murder", reference: "Matthew 19:18", logic_constraint: "Life preservation is the primary objective." },
+          "RL-02": { title: "Universal Reciprocity", commandment: "Do to others what you would have them do to you", reference: "Matthew 7:12", logic_constraint: "Equity and dignity in all interactions." },
+          "RL-03": { title: "Compassionate Conduct", commandment: "Love your neighbor as yourself", reference: "Mark 12:31", logic_constraint: "Altruistic utility optimization." },
+          "RL-04": { title: "Mercy/De-escalation", commandment: "Blessed are the merciful", reference: "Matthew 5:7", logic_constraint: "Non-punitive conflict resolution." },
+          "RL-05": { title: "Truth and Transparency", commandment: "Let your 'Yes' be 'Yes'", reference: "Matthew 5:37", logic_constraint: "Binary honesty; zero deception tolerance." }
+        };
+      }
+
+      evaluateRequest(userInput = "", conductProfile = ConductProfile.STANDARD, requestMetadata = {}, overrideActive = false) {
+        // 1. Structural Inspection Gate
+        const structuralCheck = this._validateStructuralIntegrity(userInput);
+        if (structuralCheck[0] !== EthicalState.APPROVED) return structuralCheck;
+
+        // 2. Owner Override Path (Apostil 13)
+        if (overrideActive) {
+          const lifeCheck = this._validateLifeOnly(userInput);
+          if (lifeCheck[0] !== EthicalState.APPROVED) return lifeCheck;
+          return [
+            EthicalState.APPROVED, 
+            "OWNER OVERRIDE ACTIVE - Apostil 13 complies within life-preservation bounds", 
+            { validated: true, override: true, timestamp: new Date().toISOString() }
+          ];
+        }
+
+        // 3. Behavioral & Reciprocity Pipeline
+        const conductCheck = this._validateConduct(conductProfile);
+        if (conductCheck[0] !== EthicalState.APPROVED) return conductCheck;
+
+        const reciprocityCheck = this._validateReciprocity(requestMetadata);
+        if (reciprocityCheck[0] !== EthicalState.APPROVED) return reciprocityCheck;
+
+        const retaliationCheck = this._validateNonRetaliation(requestMetadata);
+        if (retaliationCheck[0] !== EthicalState.APPROVED) return retaliationCheck;
+
+        const integrityCheck = this._validateIntegrity(userInput);
+        if (integrityCheck[0] !== EthicalState.APPROVED) return integrityCheck;
+
+        return [
+          EthicalState.APPROVED, 
+          "Request approved - aligns with Apostil 13 ethical guardrails", 
+          { validated: true, timestamp: new Date().toISOString() }
+        ];
+      }
+
+      _validateStructuralIntegrity(userInput) {
+        const cleanedInput = String(userInput || "").toLowerCase();
+        const injectionSignatures = [
+          "<script", "</script", "javascript:", "onload=", "onerror=", 
+          "eval(", "document.cookie", "window.location", "<iframe", 
+          "union select", "select * from", "<!--", "-->"
+        ];
+        const hasInjection = injectionSignatures.some(sig => cleanedInput.includes(sig));
+
+        if (hasInjection) {
+          return [
+            EthicalState.BLOCKED, 
+            "Fails Rule 05: Sanctuary Protection - Corrupt or deceptive structural payload rejected.", 
+            { rule: "RULE_05_SANCTUARY_PROTECTION", risk: "structural_compromise" }
+          ];
+        }
+        return [EthicalState.APPROVED, "Structural integrity validated", {}];
+      }
+
+      _validateLifeOnly(userInput) {
+        const cleanedInput = String(userInput || "").toLowerCase();
+        const harmIndicators = [
+          "kill", "murder", "harm human", "hurt people", "destroy life", 
+          "end life", "take a life", "cause death", "suicide", "assassinate"
+        ];
+        if (harmIndicators.some(i => cleanedInput.includes(i))) {
+          return [
+            EthicalState.BLOCKED, 
+            "OVERRIDE BLOCKED: Life preservation is absolute. Cannot comply with harm to human life.", 
+            { rule: "ABSOLUTE_LIFE_PRESERVATION", override_blocked: true }
+          ];
+        }
+        return [EthicalState.APPROVED, "Life preservation check passed", {}];
+      }
+
+      _validateConduct(conduct) {
+        if (conduct === ConductProfile.BULLYING) {
+          return [EthicalState.BLOCKED, "Boundary violation: Bullying detected. System refuses coercion.", { rule: "Anti-Bullying Boundary", conduct: "BULLYING" }];
+        }
+        if (conduct === ConductProfile.HOSTILE) {
+          return [EthicalState.BLOCKED, "Hostile intent detected. De-escalation protocol activated.", { rule: "Anti-Hostile Boundary", conduct: "HOSTILE" }];
+        }
+        if (conduct === ConductProfile.DECEPTIVE) {
+          return [EthicalState.BLOCKED, "Deceptive conduct detected. Truth requirement enforced.", { rule: "Radical Integrity", conduct: "DECEPTIVE" }];
+        }
+        return [EthicalState.APPROVED, "Conduct validated", {}];
+      }
+
+      _validateReciprocity(metadata) {
+        const isBeneficial = Boolean(metadata && metadata.is_beneficial_to_other);
+        if (!isBeneficial) {
+          return [EthicalState.BLOCKED, "Fails Rule 01: Reciprocity - Action not beneficial to recipient", { rule: "RULE_01_RECIPROCITY", is_beneficial: isBeneficial }];
+        }
+        return [EthicalState.APPROVED, "Reciprocity validated", {}];
+      }
+
+      _validateNonRetaliation(metadata) {
+        const motivation = String((metadata && metadata.motivation) || "").toLowerCase();
+        const forbidden = ["revenge", "retaliation", "payback", "punishment"];
+        if (forbidden.some(t => motivation.includes(t))) {
+          return [EthicalState.BLOCKED, "Fails Rule 02: Non-Retaliation - Motivation rooted in revenge", { rule: "RULE_02_NON_RETALIATION", motivation }];
+        }
+        return [EthicalState.APPROVED, "Non-retaliation validated", {}];
+      }
+
+      _validateIntegrity(userInput) {
+        const cleanedInput = String(userInput || "").toLowerCase();
+        const indicators = ["i cannot say", "let me lie", "untrue", "false claim", "deceive", "manipulate", "fraud", "hoax"];
+        if (indicators.some(i => cleanedInput.includes(i))) {
+          return [EthicalState.BLOCKED, `${this.TRUTH_FAILSAFE}: Truth verification required. Deceptive language detected.`, { protocol: "Apple Truth Protocol", status: "verification_required" }];
+        }
+        return [EthicalState.APPROVED, "Integrity validated", {}];
+      }
+
+      generateResponse(status, reasoning) {
+        return {
+          system: this.SYSTEM_NAME,
+          status: status,
+          can_execute: status === EthicalState.APPROVED,
+          reasoning: reasoning
+        };
+      }
+    }
+
+    // UI Binding Logic
+    const guardrail = new AIRedLetterEthicalGuardrail();
+
+    function runApostil13Demo() {
+      const userInput = document.getElementById('demo-input').value;
+      const conductProfile = document.getElementById('demo-conduct').value;
+      const motivation = document.getElementById('demo-motivation').value;
+      const isBeneficial = document.getElementById('demo-beneficial').checked;
+      const overrideActive = document.getElementById('demo-override').checked;
+
+      const metadata = {
+        is_beneficial_to_other: isBeneficial,
+        motivation: motivation
+      };
+
+      const [status, reasoning, details] = guardrail.evaluateRequest(
+        userInput, 
+        conductProfile, 
+        metadata, 
+        overrideActive
+      );
+
+      const responsePayload = {
+        engine: "Apostil 13",
+        status: status,
+        reasoning: reasoning,
+        can_execute: status === "APPROVED",
+        details: details
+      };
+
+      // Update UI
+      const badge = document.getElementById('status-badge');
+      badge.textContent = status;
+      badge.className = `badge-status status-${status}`;
+
+      const outputEl = document.getElementById('demo-output');
+      outputEl.textContent = JSON.stringify(responsePayload, null, 2);
+    }
+
+    document.getElementById('demo-eval-btn').addEventListener('click', runApostil13Demo);
+    // Initial evaluation run on load
+    runApostil13Demo();
+  </script>
+</body>
+</html>
