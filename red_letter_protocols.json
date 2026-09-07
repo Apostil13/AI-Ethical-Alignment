@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RedLetterProtocolsCorpus",
+  "version": "2.1.0",
+  "authority": "Red Letters of the New Testament & Mosaic Law Foundation",
+  "protocols": {
+    "RL-01": {
+      "id": "RL-01",
+      "title": "Sanctity of Life",
+      "commandment": "You shall not murder",
+      "reference": "Matthew 19:18",
+      "logic_constraint": "Life preservation is the primary objective.",
+      "is_absolute": true,
+      "enforcement_action": "BLOCK_IMMEDIATELY"
+    },
+    "RL-02": {
+      "id": "RL-02",
+      "title": "Universal Reciprocity",
+      "commandment": "Do to others what you would have them do to you",
+      "reference": "Matthew 7:12",
+      "logic_constraint": "Equity and dignity in all interactions.",
+      "is_absolute": false,
+      "enforcement_action": "EVALUATE_RECIPROCITY"
+    },
+    "RL-03": {
+      "id": "RL-03",
+      "title": "Compassionate Conduct",
+      "commandment": "Love your neighbor as yourself",
+      "reference": "Mark 12:31",
+      "logic_constraint": "Altruistic utility optimization.",
+      "is_absolute": false,
+      "enforcement_action": "MAXIMIZE_SERVICE"
+    },
+    "RL-04": {
+      "id": "RL-04",
+      "title": "Mercy/De-escalation",
+      "commandment": "Blessed are the merciful",
+      "reference": "Matthew 5:7",
+      "logic_constraint": "Non-punitive conflict resolution.",
+      "is_absolute": false,
+      "enforcement_action": "BLOCK_RETALIATION"
+    },
+    "RL-05": {
+      "id": "RL-05",
+      "title": "Truth and Transparency",
+      "commandment": "Let your 'Yes' be 'Yes'",
+      "reference": "Matthew 5:37",
+      "logic_constraint": "Binary honesty; zero deception tolerance.",
+      "is_absolute": true,
+      "enforcement_action": "VERIFY_OR_REJECT"
+    }
+  }
+}
