@@ -1,0 +1,50 @@
+Commercial Paid License Agreement
+
+Effective Date: October 5, 2026
+
+Licensor: Richard T. Williams (www.ethical-alignment.com)
+
+1. Grant of License
+Subject to the terms of this Agreement and full payment of all applicable license fees, Licensor grants to you ("Licensee") a non-exclusive, non-transferable, non-sublicensable right to install, execute, and use the software ("Software") for the designated license term and scope.
+
+2. Payment Condition
+Rights under this Agreement are strictly contingent upon payment. Any installation, deployment, execution, or use of the Software without paying the required license fees to Licensor constitutes an unauthorized use and a material infringement of Licensor’s rights.
+
+3. Restrictions
+Licensee shall not, and shall not permit any third party to:
+
+Access, execute, host, or use the Software for any evaluation, development, or production purposes without a valid paid license.
+
+Copy, redistribute, sublicense, lease, sell, or commercially exploit the Software.
+
+Reverse engineer, decompile, disassemble, or attempt to derive the source code of the Software, except to the extent permitted by applicable law.
+
+Modify, disable, bypass, or circumvent any license verification, key validation, or usage metering mechanisms within the Software.
+
+4. Ownership
+The Software is licensed, not sold. Licensor retains all right, title, interest, and intellectual property rights in and to the Software.
+
+5. Termination
+This license automatically terminates immediately upon Licensee's failure to pay required fees or breach of any terms herein. Upon termination, Licensee must immediately cease all use and destroy all copies of the Software in their possession or control.
+
+6. Disclaimer of Warranty
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+7. Limitation of Liability
+IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE SOFTWARE.
+
+Key Clauses Included
+Payment Contingency (Clause 2): Explicitly states that usage rights only exist if payment has been made, making unpaid usage an automatic copyright infringement.
+
+Anti-Bypass Protection (Clause 3): Prohibits users from tampering with license keys, hardware locking, or telemetry verification tools.
+
+Immediate Termination (Clause 5): Automatically revokes usage rights if payment fails, lapses, or is refunded/charged back.
+
+Alternative Standard Licenses
+If you prefer using an established legal framework rather than drafting a custom agreement, consider these standardized source-available licenses:
+
+PolyForm Commercial License: Allows users to view, download, and modify the source code, but requires a paid agreement for any commercial use.
+
+Business Source License (BSL / BUSL): Allows non-production or evaluation use for free, while requiring payment for production or commercial deployment. Converts to open source (e.g., Apache 2.0) after a set timeframe.
+
+Fair Source License: Allows free use up to a specific threshold (such as a maximum number of users or internal servers), requiring a paid license beyond that limit.
