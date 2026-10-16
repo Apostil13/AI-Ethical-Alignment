@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Apostil 13 & Red Letter Protocol Serverless API for ethical-alignment.com
+
+Globals:
+  Function:
+    Timeout: 15
+    MemorySize: 256
+    Runtime: python3.12
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        OVERSIGHT_TABLE_NAME: !Ref OversightQueueTable
+
+Resources:
+  # 1. HTTP API Gateway with CORS for ethical-alignment.com
+  ApostilHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: prod
+      CorsConfiguration:
+        AllowOrigins:
+          - "https://ethical-alignment.com"
+          - "https://www.ethical-alignment.com"
+          - "http://localhost:3000"
+        AllowMethods:
+          - GET
+          - POST
+          - OPTIONS
+        AllowHeaders:
+          - "*"
+
+  # 2. FastAPI Lambda Function
+  Apostil13Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: app.handler
+      Description: Apostil 13 Red Letter Protocol Scoring & Governance Engine
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref OversightQueueTable
+      Events:
+        RootProxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ApostilHttpApi
+            Path: /
+            Method: ANY
+        V1Proxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ApostilHttpApi
+            Path: /{proxy+}
+            Method: ANY
+
+  # 3. DynamoDB Table for Human Oversight Queue
+  OversightQueueTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Apostil13_OversightQueue
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: ticket_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ticket_id
+          KeyType: HASH
+
+Outputs:
+  ApiEndpointUrl:
+    Description: "Invoke URL for your Apostil 13 API"
+    Value: !Sub "https://${ApostilHttpApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
+  OversightTableName:
+    Description: "DynamoDB Table storing flagged ethical oversight tickets"
+    Value: !Ref OversightQueueTable
