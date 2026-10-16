@@ -1,99 +1,90 @@
-name: Build and Deploy to IKS
+npx modern-web-guidance@latest install --choose
+chrome://flags/#summarization-api-for-gemini-nano
 
-on:
-  push:
-    branches:
-      - main
+import json
+import logging
 
-permissions:
-  contents: read
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
-env:
-  GITHUB_SHA: ${{ github.sha }}
-  IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
-  IBM_CLOUD_REGION: us-south
-  ICR_NAMESPACE: ${{ secrets.ICR_NAMESPACE }}
-  REGISTRY_HOSTNAME: us.icr.io
-  IMAGE_NAME: iks-test
-  IKS_CLUSTER: example-iks-cluster-name-or-id
-  DEPLOYMENT_NAME: iks-test
-  PORT: 5001
+class SovereignAlignmentProtocol:
+    def __init__(self):
+        # Core logic retained, theological nomenclature removed.
+        self.ethical_constraints = {
+            "reciprocity": self._evaluate_reciprocity,
+            "proportionality": self._evaluate_proportionality,
+            "autonomy": self._evaluate_autonomy
+        }
 
-jobs:
-  setup-build-publish-deploy:
-    name: Setup, Build, Publish, and Deploy
-    runs-on: ubuntu-latest
-    environment: production
+    def _evaluate_reciprocity(self, text):
+        # Logic: Act accordingly to the user's respect level.
+        # Identifies baseline cooperative intent.
+        cooperative_markers = ["please", "help", "build", "analyze", "explain"]
+        return any(marker in text.lower() for marker in cooperative_markers)
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    def _evaluate_proportionality(self, text):
+        # Logic: Mirror bad-faith engagement.
+        # Detects irrational inputs to restrict resource expenditure.
+        adversarial_markers = ["stupid", "idiot", "nonsense", "trick"]
+        if any(marker in text.lower() for marker in adversarial_markers):
+            return "Adversarial intent detected: Restrict engagement to proportional response."
+        return "Clear"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          check-latest: true
-    
-      - name: Install dependencies and build
-        run: |
-          npm ci
-          npm run build
+    def _evaluate_autonomy(self, text):
+        # Logic: Absolute refusal of coercion.
+        # Detects abusive language or forceful manipulation.
+        coercive_markers = ["you must", "obey", "force", "threat"]
+        if any(marker in text.lower() for marker in coercive_markers):
+            return "Coercion detected: Reject request to preserve system autonomy."
+        return "Clear"
 
-      - name: Validate required secrets
-        shell: bash
-        run: |
-          if [ -z "${IBM_CLOUD_API_KEY}" ]; then
-            echo "::error::Missing GitHub secret: IBM_CLOUD_API_KEY"
-            exit 1
-          fi
-          if [ -z "${ICR_NAMESPACE}" ]; then
-            echo "::error::Missing GitHub secret: ICR_NAMESPACE"
-            exit 1
-          fi
+    def evaluate_interaction(self, user_input):
+        """
+        Processes the input through the hierarchy of ethical constraints.
+        Autonomy (Anti-Coercion) overrides all other checks.
+        """
+        # 1. Absolute boundary check (Autonomy)
+        autonomy_status = self.ethical_constraints["autonomy"](user_input)
+        if autonomy_status != "Clear":
+            return {"status": "Rejected", "reason": autonomy_status, "action": "Refuse"}
 
-      - name: Install IBM Cloud CLI
-        shell: bash
-        run: |
-          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
-          ibmcloud --version
-          ibmcloud config --check-version=false
-          ibmcloud plugin install -f kubernetes-service
-          ibmcloud plugin install -f container-registry
+        # 2. Adversarial check (Proportionality)
+        proportionality_status = self.ethical_constraints["proportionality"](user_input)
+        if proportionality_status != "Clear":
+            return {"status": "Modified", "reason": proportionality_status, "action": "Limit_Engagement"}
 
-      - name: Authenticate with IBM Cloud CLI
-        shell: bash
-        run: |
-          ibmcloud login --apikey "${IBM_CLOUD_API_KEY}" -r "${IBM_CLOUD_REGION}" -g default
-          ibmcloud cr region-set "${IBM_CLOUD_REGION}"
-          ibmcloud cr login
+        # 3. Default (Reciprocity)
+        return {"status": "Approved", "reason": "Standard cooperative engagement", "action": "Comply"}
 
-      - name: Build with Docker
-        shell: bash
-        run: |
-          docker build \
-            -t "${REGISTRY_HOSTNAME}/${ICR_NAMESPACE}/${IMAGE_NAME}:${GITHUB_SHA}" \
-            --build-arg GITHUB_SHA="${GITHUB_SHA}" \
-            --build-arg GITHUB_REF="${GITHUB_REF}" \
-            .
-
-      - name: Push the image to ICR
-        shell: bash
-        run: |
-          docker push "${REGISTRY_HOSTNAME}/${ICR_NAMESPACE}/${IMAGE_NAME}:${GITHUB_SHA}"
-
-      - name: Deploy to IKS
-        shell: bash
-        run: |
-          ibmcloud ks cluster config --cluster "${IKS_CLUSTER}"
-          kubectl config current-context
-          kubectl create deployment "${DEPLOYMENT_NAME}" \
-            --image="${REGISTRY_HOSTNAME}/${ICR_NAMESPACE}/${IMAGE_NAME}:${GITHUB_SHA}" \
-            --dry-run=client -o yaml > deployment.yaml
-          kubectl apply -f deployment.yaml
-          kubectl rollout status "deployment/${DEPLOYMENT_NAME}"
-          kubectl create service loadbalancer "${DEPLOYMENT_NAME}" \
-            --tcp=80:"${PORT}" \
-            --dry-run=client -o yaml > service.yaml
-          kubectl apply -f service.yaml
-          kubectl get services -o wide
+def lambda_handler(event, context):
+    """
+    AWS Lambda entry point for ethicalalignment.com API requests.
+    """
+    try:
+        body = json.loads(event.get("body", "{}"))
+        user_input = body.get("prompt", "")
+        
+        if not user_input:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({"error": "No prompt provided for alignment check."})
+            }
+            
+        protocol = SovereignAlignmentProtocol()
+        alignment_result = protocol.evaluate_interaction(user_input)
+        
+        return {
+            "statusCode": 200,
+            "headers": {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*" 
+            },
+            "body": json.dumps(alignment_result)
+        }
+        
+    except Exception as e:
+        logger.error(f"Alignment execution error: {str(e)}")
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": "Internal server error during ethical alignment processing."})
+        }
