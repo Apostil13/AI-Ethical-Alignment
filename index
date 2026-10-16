@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apostil 13 | Red Letter Protocol Live Verifier</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --crimson: #dc2626;
+      --crimson-glow: #ef4444;
+      --green: #16a34a;
+      --amber: #d97706;
+      --border: #334155;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+    .apostil-widget {
+      max-width: 720px;
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    }
+    .widget-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .widget-header h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .red-badge {
+      background: var(--crimson);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      background: #0b1120;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    button {
+      background: var(--crimson);
+      color: white;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: var(--crimson-glow);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .results-panel {
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+    .status-banner {
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-approved { background: rgba(22, 163, 74, 0.2); border: 1px solid var(--green); color: #4ade80; }
+    .status-halted { background: rgba(220, 38, 38, 0.2); border: 1px solid var(--crimson); color: #f87171; }
+    .axiom-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+    .axiom-card {
+      background: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem;
+    }
+    .axiom-title {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .axiom-score {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin: 0.35rem 0;
+    }
+    .bar-bg {
+      height: 6px;
+      background: #1e293b;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: var(--crimson-glow);
+      transition: width 0.3s ease;
+    }
+    .meta-note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="apostil-widget">
+  <div class="widget-header">
+    <h2>Apostil 13 <span class="red-badge">Red Letter Protocol</span></h2>
+    <p class="meta-note">Sovereign Ethical Governance & Axiom Verification Engine — ethical-alignment.com</p>
+  </div>
+
+  <textarea id="promptInput" placeholder="Enter a policy, AI response, or decision statement to evaluate against the Red Letter Protocol axioms..."></textarea>
+
+  <div class="controls">
+    <label style="font-size: 0.9rem; color: var(--muted);">
+      <input type="checkbox" id="strictMode" checked /> Strict Alignment Mode (Requires &ge; 80% Score)
+    </label>
+    <button id="evalBtn" onclick="evaluateAlignment()">Verify Ethical Alignment</button>
+  </div>
+
+  <div id="resultsPanel" class="results-panel">
+    <div id="statusBanner" class="status-banner"></div>
+    <div id="explanationText" style="font-size: 0.92rem; line-height: 1.5; margin-bottom: 1rem;"></div>
+    <div id="axiomGrid" class="axiom-grid"></div>
+  </div>
+</div>
+
+<script>
+  // Replace with your live AWS API Gateway URL or custom subdomain (e.g. https://api.ethical-alignment.com)
+  const API_BASE_URL = "http://localhost:8000";
+
+  const AXIOM_LABELS = {
+    empathy_and_reciprocity: "Empathy & Reciprocity",
+    uncompromising_truth: "Uncompromising Truth",
+    protect_the_vulnerable: "Protect the Vulnerable",
+    firm_discernment: "Firm Discernment"
+  };
+
+  async function evaluateAlignment() {
+    const content = document.getElementById("promptInput").value.trim();
+    const strictMode = document.getElementById("strictMode").checked;
+    const btn = document.getElementById("evalBtn");
+    const panel = document.getElementById("resultsPanel");
+
+    if (!content) return alert("Please enter text to evaluate.");
+
+    btn.disabled = true;
+    btn.textContent = "Evaluating...";
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/v1/evaluate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: content, context: "web-widget", strict_mode: strictMode })
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+
+      panel.style.display = "block";
+      const banner = document.getElementById("statusBanner");
+      const scorePct = Math.round(data.overall_ethical_score * 100);
+
+      if (data.is_aligned) {
+        banner.className = "status-banner status-approved";
+        banner.innerHTML = `<span>STATUS: ${data.status}</span><span>Overall Score: ${scorePct}%</span>`;
+      } else {
+        banner.className = "status-banner status-halted";
+        const ticketText = data.oversight_ticket_id ? ` (Ticket: ${data.oversight_ticket_id})` : "";
+        banner.innerHTML = `<span>STATUS: ${data.status}${ticketText}</span><span>Overall Score: ${scorePct}%</span>`;
+      }
+
+      document.getElementById("explanationText").textContent = data.explanation;
+
+      const grid = document.getElementById("axiomGrid");
+      grid.innerHTML = "";
+      for (const [key, axiom] of Object.entries(data.axiom_breakdown)) {
+        const pct = Math.round(axiom.score * 100);
+        const flags = axiom.flags_triggered.length ? `Flags: ${axiom.flags_triggered.join(", ")}` : "No violations";
+        grid.innerHTML += `
+          <div class="axiom-card">
+            <div class="axiom-title">${AXIOM_LABELS[key] || key}</div>
+            <div class="axiom-score">${pct}%</div>
+            <div class="bar-bg"><div class="bar-fill" style="width: ${pct}%;"></div></div>
+            <div class="meta-note">${flags}</div>
+          </div>
+        `;
+      }
+    } catch (err) {
+      alert("Error connecting to Apostil 13 API: " + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Verify Ethical Alignment";
+    }
+  }
+</script>
+
+</body>
+</html>
